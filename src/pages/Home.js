@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
-  StatusBar,
   StyleSheet,
   Text,
   View,
@@ -15,16 +14,28 @@ import { SkillCard } from '../components/SkillCard';
 export function Home() {
   const [newSkill, setNewSkill] = useState('');
   const [mySkills, setMySkills] = useState([]);
+  const [greeting, setGreeting] = useState('');
 
   function handleAddNewSkill() {
     setMySkills((oldState) => [...oldState, newSkill]);
   }
 
+  useEffect(() => {
+    const currentHour = new Date().getHours();
+
+    if (currentHour < 12) {
+      setGreeting('Good morning');
+    } else if ((currentHour >= 12) & (currentHour < 18)) {
+      setGreeting('Good aftermon');
+    } else {
+      setGreeting('Good night');
+    }
+  }, []);
+
   return (
     <View style={styles.container}>
-      <StatusBar barStyle="light-content" backgroundColor="#121015" />
-
       <Text style={styles.title}>Welcome, Andres</Text>
+      <Text style={styles.greetings}>{greeting}</Text>
 
       <TextInput
         style={styles.input}
@@ -78,5 +89,8 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 18,
     fontWeight: 'bold',
+  },
+  greetings: {
+    color: '#fff',
   },
 });
