@@ -11,13 +11,29 @@ import {
 import { Button } from '../components/Button';
 import { SkillCard } from '../components/SkillCard';
 
+interface ISkill {
+  id: string;
+  name: string;
+}
+
 export function Home() {
   const [newSkill, setNewSkill] = useState('');
-  const [mySkills, setMySkills] = useState([]);
+  const [mySkills, setMySkills] = useState([] as ISkill[]);
   const [greeting, setGreeting] = useState('');
 
   function handleAddNewSkill() {
-    setMySkills((oldState) => [...oldState, newSkill]);
+    const data: ISkill = {
+      id: String(new Date().getTime()),
+      name: newSkill,
+    };
+
+    setMySkills((oldState) => [...oldState, data]);
+  }
+
+  function handleRemoveSkill(skillId: string) {
+    const skills = mySkills.filter((skill) => skill.id !== skillId);
+
+    setMySkills(skills);
   }
 
   useEffect(() => {
@@ -25,7 +41,7 @@ export function Home() {
 
     if (currentHour < 12) {
       setGreeting('Good morning');
-    } else if ((currentHour >= 12) & (currentHour < 18)) {
+    } else if (currentHour >= 12 && currentHour < 18) {
       setGreeting('Good aftermon');
     } else {
       setGreeting('Good night');
@@ -44,15 +60,20 @@ export function Home() {
         onChangeText={setNewSkill}
       />
 
-      <Button onPress={handleAddNewSkill} />
+      <Button onPress={handleAddNewSkill} title="Add" />
 
       <Text style={[styles.title, { marginVertical: 50 }]}>My Skills</Text>
 
       <FlatList
         showsVerticalScrollIndicator={false}
         data={mySkills}
-        keyExtractor={(key) => key}
-        renderItem={({ item }) => <SkillCard title={item} />}
+        keyExtractor={(key) => key.id}
+        renderItem={({ item }) => (
+          <SkillCard
+            title={item.name}
+            onPress={() => handleRemoveSkill(item.id)}
+          />
+        )}
       />
     </View>
   );
